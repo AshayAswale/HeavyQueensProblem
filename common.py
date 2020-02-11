@@ -1,4 +1,5 @@
 from copy import copy, deepcopy
+import random
 import numpy as np
 
 class HeavyQueenCommons:
@@ -53,8 +54,7 @@ class HeavyQueenCommons:
             for i in min_b:
                 qn_list = np.append(qn_list, attack_list[i,1])
         qn_list = np.unique(qn_list)
-        print (qn_list)
-
+        # print (qn_list)
         return qn_list
 
 
@@ -65,7 +65,37 @@ class HeavyQueenCommons:
         cost = move_dist*qn_wt
         return cost
 
-    def getLightestQn(self, attack_qn):
-        min_a = attack_qn[:][3].index(min(attack_qn[:][3]))
-        print (min_a)
-        return min_a
+    # def getLightestQn(self, attack_qn):
+    #     min_a = attack_qn[:][3].index(min(attack_qn[:][3]))
+    #     print (min_a)
+    #     return min_a
+
+    @staticmethod
+    def getLowestHeurMoves(move_log):
+        indexes = np.where(move_log[:,2] == move_log[:,2].min())
+        a = []
+        for i in indexes[0]:
+            a.append(move_log[i])
+        return np.array(a)
+
+    @staticmethod
+    def getLowestCostMoves(possbl_moves):
+        indexes = np.where(possbl_moves[:,3] == possbl_moves[:,3].min())
+        a = []
+        for i in indexes[0]:
+            a.append(possbl_moves[i])
+        return np.array(a)
+
+    @staticmethod
+    def drawBoard(queens):
+        n = len(queens)
+        board = np.zeros([n, n], dtype = int) 
+        for i in range(0, n):
+            q_wt = random.randint(1,9)
+            pos = random.randint(0,n-1)
+            board[i][pos] = q_wt
+            queens[i][:] = (pos, q_wt)
+        
+        print("### Solved Queen Board ###")
+        print(board.T)
+        print("\n")

@@ -12,9 +12,9 @@ def createBoard(argv):
             
     """
     n = int(argv[0])
-    board = np.zeros([n, n], dtype = int) 
     queens = np.zeros([n, 2], dtype = int) # Row of existance and weight
 
+    board = np.zeros([n, n], dtype = int) 
     for i in range(0, n):
         q_wt = random.randint(1,9)
         pos = random.randint(0,n-1)
