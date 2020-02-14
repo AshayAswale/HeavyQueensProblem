@@ -60,8 +60,8 @@ class HeavyQueenCommons:
 
         # Add the minimums of all the attacking pairs
         for i in range(len(attack_list)):
-            min_sum += min(attack_list[i][2], attack_list[i][3])
-        return min_sum**2
+            min_sum += min(attack_list[i][2], attack_list[i][3])**2
+        return min_sum
 
     def getHeuristic(self, attack_list):
         if self.heuristic == 0:  # H1
