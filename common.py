@@ -20,14 +20,21 @@ class HeavyQueenCommons:
     """
     @staticmethod
     def getAttackList(qn_pos):
-        count = 0
-        attack_qn_lst = []
-        for q_1 in range(0, len(qn_pos)-1):
-            for q_2 in range(q_1+1, len(qn_pos)):
-                diff = q_1 - q_2
+        count = 0   # This will have count of attacking positions
+        attack_qn_lst = []  # This will maintain the list of attacking queens
+
+        for q_1 in range(0, len(qn_pos)-1):         # Iterating board columns
+            for q_2 in range(q_1+1, len(qn_pos)):   # Iterating board rows
+                diff = q_1 - q_2          # Distance in column of two queens
+
+                # When queens are attacking sideways
                 is_same_row = qn_pos[q_1][0] == qn_pos[q_2][0]
+
+                # When queens are attacking diagonally
                 is_diag_up = qn_pos[q_1][0] == qn_pos[q_2][0] + diff
                 is_diag_dn = qn_pos[q_1][0] == qn_pos[q_2][0] - diff
+
+                # If queens are attacking in any configuration, add to attacking list
                 if is_same_row or is_diag_up or is_diag_dn:
                     count += 1
                     attack_qn_lst.append(
@@ -35,13 +42,29 @@ class HeavyQueenCommons:
         return np.array(attack_qn_lst)
 
     @staticmethod
-    def getHeuristic(attack_list):
-        # return len(attack_list)
+    def getH1(attack_list):
+        # If board has been solved, then there will be no attacking queens.
+        # Hence return 0
         if len(attack_list) == 0:
             return 0
+
+        # Returning Lowest weight of queen amongst attacking queens
         min_a = attack_list[:, 2].min()
         min_b = attack_list[:, 3].min()
         return min(min_a, min_b)
+
+    @staticmethod
+    def getH2(attack_list):
+        min_sum = 0
+        for i in range(len(attack_list)):
+            min_sum += min(attack_list[i][2], attack_list[i][3])
+        return min_sum
+
+    def getHeuristic(self, attack_list):
+        if self.heuristic == 0:  # H1
+            return self.getH1(attack_list)
+        else:
+            return self.getH2(attack_list)
 
     @staticmethod
     def getLightQnColumn(attack_list):
@@ -65,9 +88,10 @@ class HeavyQueenCommons:
         # print (qn_list)
         return qn_list
 
-    def getMoveCost(self, col, row):
-        qn_wt = self._local_qn[col][1]
-        qn_org_row = self._local_qn[col][0]
+    @staticmethod
+    def getMoveCost(col, row, queens_posn):
+        qn_wt = queens_posn[col][1]
+        qn_org_row = queens_posn[col][0]
         move_dist = abs(qn_org_row - row)
         cost = move_dist*qn_wt
         return cost

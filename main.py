@@ -54,8 +54,8 @@ def getDemoBoard():
 
 
 def main(argv):
-    queens = createBoard(argv)
-    # queens = getDemoBoard()
+    # queens = createBoard(argv)
+    queens = getDemoBoard()
     heur = 0 if argv[2] == "H1" else 1
 
     if int(argv[1]) == 1:   # A* Algorithm
