@@ -51,21 +51,26 @@ class HeavyQueenCommons:
         # Returning Lowest weight of queen amongst attacking queens
         min_a = attack_list[:, 2].min()
         min_b = attack_list[:, 3].min()
-        return min(min_a, min_b)
+        return min(min_a, min_b)**2     # Squaring the weight before sending
 
     @staticmethod
     def getH2(attack_list):
+        # Initialize the sum
         min_sum = 0
+
+        # Add the minimums of all the attacking pairs
         for i in range(len(attack_list)):
             min_sum += min(attack_list[i][2], attack_list[i][3])
-        return min_sum
+        return min_sum**2
 
     def getHeuristic(self, attack_list):
         if self.heuristic == 0:  # H1
             return self.getH1(attack_list)
-        else:
+        else:                    # H2
             return self.getH2(attack_list)
 
+    # ---NOTE TO SELF---
+    # IS THIS NEEDED ???
     @staticmethod
     def getLightQnColumn(attack_list):
         # min_a = attack_list[:][3:4].index(min(attack_list[:][3:4]))
@@ -88,12 +93,16 @@ class HeavyQueenCommons:
         # print (qn_list)
         return qn_list
 
-    @staticmethod
-    def getMoveCost(col, row, queens_posn):
-        qn_wt = queens_posn[col][1]
-        qn_org_row = queens_posn[col][0]
-        move_dist = abs(qn_org_row - row)
-        cost = move_dist*qn_wt
+    """
+        qn_col - column of the queen
+        final_row - row in which queen is to be moved
+        init_row - initial row from the queen
+    """
+
+    def getMoveCost(self, qn_col, final_row, init_row):
+        qn_wt = self._local_qn[qn_col][1]       # Weight of the queen
+        move_dist = abs(init_row - final_row)   # Distance to be moved
+        cost = move_dist*qn_wt*qn_wt            # Total Cost Calculation
         return cost
 
     # def getLightestQn(self, attack_qn):
