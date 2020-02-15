@@ -1,5 +1,6 @@
 from common import HeavyQueenCommons
 from copy import copy, deepcopy
+import math
 import time
 import random
 import numpy as np
@@ -178,3 +179,92 @@ class HillClimb:
                 # Reset the changed value to original value before change.
                 self._local_qn[light_qn_col][0] = val
         return np.array(move_log)
+
+    def solveSimulatedAnnealing(self):
+        start_time = time.time()
+
+        cost = 0
+        move_log = []
+        solving = True
+        curr_heur = 1000
+        moves_tried = 0
+        move_list = []
+
+        start_attack = self.common.getAttackList(self._local_qn)
+        lowest_heur = self.common.getHeuristic(start_attack)
+        start_heur = (lowest_heur)
+        print("Heuristic at start: ", lowest_heur)
+        print("\n \n")
+
+        while solving:
+            move_log = self.getMoveLog()
+            if len(move_log) == 0:
+                solving = False
+                break
+            elapsed_time = time.time() - start_time
+
+            temp = self.cooldown(elapsed_time)
+
+            if elapsed_time > 10:
+                solving = False
+                break
+
+            i = random.randint(0, len(move_log) - 1)
+            possible_move = move_log[i]
+
+            del_E = curr_heur - possible_move[2]
+
+            if del_E > 0:
+                curr_heur = self.makeMove(possible_move)
+                moves_tried += 1
+                move_list.append([possible_move[0], possible_move[1]])
+                cost += possible_move[3]
+            else:
+                probl = self.calcAnnealingProbability(del_E, temp)
+                if random.randint(0, 100) < probl * 100:
+                    curr_heur = self.makeMove(possible_move)
+                    moves_tried += 1
+                    move_list.append([possible_move[0], possible_move[1]])
+                    cost += possible_move[3]
+
+        self.common.drawBoard(self._local_qn)
+        start_attack = self.common.getAttackList(self._local_qn)
+        lowest_heur = self.common.getHeuristic(start_attack)
+        start_heur = (lowest_heur)
+        print("Heuristic at end: ", lowest_heur)
+        print("\n \n")
+
+        ################################
+        ####### PRINTING RESULTS #######
+        ################################
+        print("Number of nodes expanded:", moves_tried)
+        print("Time to solve the puzzle: ", elapsed_time)
+        if len(move_list) != 0:
+            print("Branching Factor: ", (moves_tried / len(move_list)))
+        else:
+            print("Branching Factor: --NA--")
+        print("Cost to solve: ", cost)
+        # print("Sequence of moves: \n", move_list)
+        # print("Number of restarts: ", restarts)
+
+    @staticmethod
+    def cooldown(elapsed_time):
+        a = 1000
+        r = 0.8
+        return a*(1-r)**elapsed_time
+
+    @staticmethod
+    def calcAnnealingProbability(del_E, temp):
+        if del_E > 0:
+            print("gundla")
+        # print("exp:", del_E)
+        return math.e**(del_E/temp)
+
+    def makeMove(self, possible_move):
+        col = possible_move[0]
+        row = possible_move[1]
+        self._local_qn[col][0] = row
+        return possible_move[2]
+        # moves_tried += 1
+        # cost += possible_move[3]
+        # move_list.append([col, row])

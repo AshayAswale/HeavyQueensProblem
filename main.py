@@ -54,15 +54,15 @@ def getDemoBoard():
 
 
 def main(argv):
-    # queens = createBoard(argv)
-    queens = getDemoBoard()
+    queens = createBoard(argv)
+    # queens = getDemoBoard()
     heur = 0 if argv[2] == "H1" else 1
 
     if int(argv[1]) == 1:   # A* Algorithm
         pass
     elif int(argv[1]) == 2:  # Hill Climb
         hill_solver = HillClimb(queens, heur)
-        hill_solver.solve()
+        hill_solver.solveSimulatedAnnealing()
 
 
 if __name__ == "__main__":
