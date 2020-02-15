@@ -62,7 +62,7 @@ def main(argv):
         pass
     elif int(argv[1]) == 2:  # Hill Climb
         hill_solver = HillClimb(queens, heur)
-        hill_solver.solveSimulatedAnnealing()
+        hill_solver.solve()
 
 
 if __name__ == "__main__":
