@@ -4,6 +4,7 @@ import random
 from array import *
 import numpy as np
 from hill_climb import HillClimb
+from astar import AStar
 
 
 def createBoard(argv):
@@ -59,7 +60,8 @@ def main(argv):
     heur = 0 if argv[2] == "H1" else 1
 
     if int(argv[1]) == 1:   # A* Algorithm
-        pass
+        astar_solver= AStar(queens,heur)
+        print(astar_solver.Solve())
     elif int(argv[1]) == 2:  # Hill Climb
         hill_solver = HillClimb(queens, heur)
         hill_solver.solve()
