@@ -47,7 +47,7 @@ class AStar:
     	maxcost=float("inf")
 
     	# Looping over the nodes
-    	while len(open_list):
+    	while len(open_list) and time.time()-start_time<10:
     		current_node = open_list[0]
     		current_index=0
     		# Finding the best node to explore
@@ -64,7 +64,7 @@ class AStar:
    			# Putting the node to be explored to the closed list
     		open_list.pop(current_index)
     		closed_list.append(current_node)
-
+    		# print(len(open_list))
     		# Checking if the node is the target node
     		attack_list=self.common.getAttackList(current_node.config)
     		end=len(attack_list)
@@ -73,7 +73,7 @@ class AStar:
     			current = current_node
     			while current is not None:
     				path.append(current.encode(current.config))
-    				self.common.drawBoard(current.config)
+    				# self.common.drawBoard(current.config)
     				current=current.parent
     			return path[::-1],current_node.g,current_node.h,time.time()-start_time
 
@@ -122,8 +122,11 @@ class AStar:
     			#Checking if the node belongs to the open list
     			op=0
     			for index,open_neighbour in enumerate(open_list):
-    				if neighbour_node == open_neighbour and neighbour_node.g > open_neighbour.g:
-    					op=1
+    				if neighbour_node == open_neighbour:
+    					if neighbour_node.g > open_neighbour.g:
+    						op=1
+    					else:
+    						open_list.pop(index)
     			if op==1:
     				continue
     			# Adding the node to the open list 
