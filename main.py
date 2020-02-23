@@ -12,7 +12,7 @@ def createBoard(argv):
             Queen = [Column][Row, Weight]
 
     """
-    n = int(argv[0])
+    n = int(argv)
     queens = np.zeros([n, 2], dtype=int)  # Row of existence and weight
 
     board = np.zeros([n, n], dtype=int)
