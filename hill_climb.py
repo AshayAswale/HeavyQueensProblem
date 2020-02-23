@@ -180,53 +180,90 @@ class HillClimb:
                 self._local_qn[light_qn_col][0] = val
         return np.array(move_log)
 
+##################################################
+# This code is not perfect. There is a reason it is
+# not considered in the final submission.
+# But it is working code none the less. So you can
+# use it as a guide to implement Annealing
+##################################################
+
     def solveSimulatedAnnealing(self):
         start_time = time.time()
 
-        cost = 0
-        move_log = []
-        solving = True
-        curr_heur = 1000
-        moves_tried = 0
-        move_list = []
+        cost = 0        # To maintain cost of the board
+        move_log = []   # To maintain the list of possible moves
+        solving = True  # This will be needed to break the loop, if board is solved
+        curr_heur = 1000  # Starting with huge heuristic, just to make sure that
+                          # during annealing, we have enough difference between
+                          # calculated heuristic and current heuristic.
+        moves_tried = 0 # To count moves made.
+        move_list = []  # To maintain the list of moves made
 
+        # Getting the attacking list of queens at start of code
         start_attack = self.common.getAttackList(self._local_qn)
+        # Setting initial heuristic as lowest heuristic for start
         lowest_heur = self.common.getHeuristic(start_attack)
+        # Setting initial heuristic as lowest heuristic for start
         start_heur = (lowest_heur)
         print("Heuristic at start: ", lowest_heur)
         print("\n \n")
 
+        # Annealing code starts here.
         while solving:
-            move_log = self.getMoveLog()
-            if len(move_log) == 0:
-                solving = False
-                break
-            elapsed_time = time.time() - start_time
 
+            move_log = self.getMoveLog()    # List of possible moves
+            if len(move_log) == 0:          # If no possible moves, then we have solved the board.
+                solving = False             
+                break
+            elapsed_time = time.time() - start_time     # Keeping track of time
+
+            # Decreasing temperature with respect to elapsed time
             temp = self.cooldown(elapsed_time)
 
+            # If already ran out of time, then exit the code.
             if elapsed_time > 10:
                 solving = False
                 break
 
+            # Choosing random move out of possible moves
+            # as all the moves will have same heuristic
             i = random.randint(0, len(move_log) - 1)
             possible_move = move_log[i]
 
+            # ref.: https://youtu.be/C86j1AoMRr0?t=372
+            # Delta e is difference between heuristic of your current best move,
+            # and existing heuristic.
             del_E = curr_heur - possible_move[2]
 
+            # If the delta E is positive, it means you improve. Make move without
+            # giving it a second thought.
             if del_E > 0:
                 curr_heur = self.makeMove(possible_move)
                 moves_tried += 1
                 move_list.append([possible_move[0], possible_move[1]])
                 cost += possible_move[3]
+
+            # Now, if the delta is is zero of negative, you can either make a
+            # shoulder move, or worse move. Now you will decide which move to make,
+            # or to not make any move in the first place.
             else:
+                # Probability of making that move.
+                # At the start, when temperature is huge, no matter how bad the del_e
+                # is, your probability will be one. which means, at the start of code,
+                # you are very likely to make bad move
                 probl = self.calcAnnealingProbability(del_E, temp)
+
+                # Now this will decide to make a move depending on the probability
+                # Multiply the probability by 100, and choose a random number under 100
+                # If the random number falls within probability, make that move,
+                # else let it go.
                 if random.randint(0, 100) < probl * 100:
                     curr_heur = self.makeMove(possible_move)
                     moves_tried += 1
                     move_list.append([possible_move[0], possible_move[1]])
                     cost += possible_move[3]
 
+        # Preparing variables for showing results
         self.common.drawBoard(self._local_qn)
         start_attack = self.common.getAttackList(self._local_qn)
         lowest_heur = self.common.getHeuristic(start_attack)
@@ -247,24 +284,36 @@ class HillClimb:
         # print("Sequence of moves: \n", move_list)
         # print("Number of restarts: ", restarts)
 
+
+    """
+    This gives you the temperature with respect to increasing time
+    the function Y = a*(1-r)^x is a decaying function.
+    Use this to get a feel of it: https://www.desmos.com/calculator
+    """
     @staticmethod
     def cooldown(elapsed_time):
         a = 1000
         r = 0.8
         return a*(1-r)**elapsed_time
 
+    """
+    Just returns the probability of making a move.
+    When temperature is very high, no matter how bad the move is,
+    it can make it.
+    When the temperature is decreasing, you can still make moves 
+    which are not that bad, but if the move is very bad, probability
+    of making that move will decrease.
+    """
     @staticmethod
     def calcAnnealingProbability(del_E, temp):
-        if del_E > 0:
-            print("gundla")
-        # print("exp:", del_E)
         return math.e**(del_E/temp)
 
+
+    """
+    Simply make that move.
+    """
     def makeMove(self, possible_move):
         col = possible_move[0]
         row = possible_move[1]
         self._local_qn[col][0] = row
         return possible_move[2]
-        # moves_tried += 1
-        # cost += possible_move[3]
-        # move_list.append([col, row])
