@@ -28,6 +28,7 @@ def createBoard(argv):
     print("\n")
     return queens
 
+
 def getDemoBoard(input_file):
 
     with open(input_file, 'r', encoding="utf-8-sig") as csv_file:
@@ -72,11 +73,9 @@ def getDemoBoard(input_file):
 
 
 def main(argv):
-    queens = createBoard(argv[0])
-    # queens = getDemoBoard(argv[0])
+    # queens = createBoard(argv[0])
+    queens = getDemoBoard(argv[0])
     heur = 0 if argv[2] == "H1" else 1
-
-
 
     if int(argv[1]) == 1:   # A* Algorithm
         astar_solver = AStar(queens, heur)
@@ -84,6 +83,7 @@ def main(argv):
     elif int(argv[1]) == 2:  # Hill Climb
         hill_solver = HillClimb(queens, heur)
         hill_solver.solve()
+        # hill_solver.solveSimulatedAnnealing()
 
 
 if __name__ == "__main__":
