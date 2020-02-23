@@ -68,6 +68,7 @@ class AStar:
     		# Checking if the node is the target node
     		attack_list=self.common.getAttackList(current_node.config)
     		end=len(attack_list)
+    		
     		if  end == 0:
     			path=[]
     			current = current_node
@@ -75,7 +76,17 @@ class AStar:
     				path.append(current.encode(current.config))
     				# self.common.drawBoard(current.config)
     				current=current.parent
-    			return path[::-1],current_node.g,current_node.h,time.time()-start_time
+
+    			################################
+        		####### PRINTING RESULTS #######
+        		################################
+        		print("Number of nodes expanded: %s"%(len(closed_list)-1))
+        		print("Time to solve the puzzle: %0.2f Seconds"%(time.time()-start_time))
+        		print("Effective branching factor: %s"%((len(closed_list)-1)/len(path)))
+        		print("Cost to solve the puzzle: %s"%current_node.f)
+        		print("Sequence of moves: %s \n \n"%path[::-1])
+        		self.common.drawBoard(current_node.config)
+    			return 
 
     		# Calling function to generate neighbours of the current node
     		self.generate_neighbours(current_node,open_list,closed_list)
@@ -117,7 +128,7 @@ class AStar:
     			# Setting the maximum cost 
     			if neighbour_node.h ==0 and maxcost> neighbour_node.f:
     				maxcost= neighbour_node.f
-    				print("Target Cost: %s"%maxcost)
+    				# print("Target Cost: %s"%maxcost)
 
     			#Checking if the node belongs to the open list
     			op=0
