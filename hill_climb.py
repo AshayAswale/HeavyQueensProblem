@@ -207,6 +207,76 @@ class HillClimb:
 
 ############################################################################################
 
+
+    def solveSimulatedAnnealing(self):
+        self.start_time = time.time()
+
+    def SinglePassHillClimb(self):
+        max_shoulder_moves = 10
+        shoulder_moves = 0
+        while True:
+            # print("##")
+            if self.timeOut():
+                break
+
+            move_log = self.getMoveLog()
+
+            if len(move_log) == 0:  # Board Solved
+                self.solving = False
+                break
+
+            # Enquiring Possible moves. Returns only the move
+            # Where Heuristic is the lowest.
+            possible_moves = self.common.getLowestHeurMoves(move_log)
+
+            # Choose random move out of possible moves, as all
+            # the possible moves have same heuristic value
+            i = random.randint(0, len(possible_moves)-1)
+
+            # If possible move has lower heuristic value than
+            # existing lowest value, make that move.
+            if self.lowest_heur >= possible_moves[i][2]:
+                # print(self.lowest_heur)
+                self.lowest_heur = possible_moves[i][2]
+                col = possible_moves[i][0]
+                row = possible_moves[i][1]
+                self._local_qn[col][0] = row
+                self.moves_tried += 1
+                self.cost += possible_moves[i][3]
+                self.move_list.append([col, row])
+                # self.makeMove(possible_moves, i)
+                if self.lowest_heur == possible_moves[i][2]:
+                    shoulder_moves += 1
+
+            # If the move has heuristic more than the lowest
+            # then exit the loop
+            else:
+                break
+
+            # Limiting possible side moves
+            if shoulder_moves >= max_shoulder_moves:
+                break
+
+    def timeOut(self):
+        # If time has passed, exit the code with whatever best we have
+        elapsed_time = time.time() - self.start_time
+        timeOut = False
+        if elapsed_time > 10:
+            timeOut = True
+        return timeOut
+
+    def makeMove(self, possible_moves, i):
+        self.lowest_heur = possible_moves[i][2]
+        col = possible_moves[i][0]
+        row = possible_moves[i][1]
+        self._local_qn[col][0] = row
+        self.moves_tried += 1
+        self.cost += possible_moves[i][3]
+        self.move_list.append([col, row])
+
+
+############################################################################################
+
 ##################################################
 # This code is not perfect. There is a reason it is
 # not considered in the final submission.
