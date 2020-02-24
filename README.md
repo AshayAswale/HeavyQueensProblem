@@ -22,6 +22,14 @@ Example run:
 python3 main.py heavy_queens_board.csv 2 H1
 ```
 
+#### Understanding Output:
+_The 'Sequence of moves' in the output is the list of list of queen positions. It can be understood as follows:_
+```
+Sequence of moves: [[n,m],[x,y]]
+```
+_In the example above, the The first move is to move the queen from Nth column to Mth row. Similarly, the second move is to move the queen from Xth column to Yth row_
+
+
 ## Testing the code
 
 #### Use Random Generated Board
